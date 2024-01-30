@@ -16,4 +16,7 @@ public interface FilmRepository extends JpaRepository<Film, Integer> {
     @Query(value = "SELECT title FROM film WHERE (film_id IN (SELECT film_id FROM film_category WHERE (category_id = (SELECT category_id FROM category " +
             "WHERE name = :category ))));", nativeQuery = true)
     Iterable<String> findFilmsInCategory(@Param("category") String category);
+
+    @Query(value = "SELECT title, description FROM film WHERE description LIKE :searchTerm ;", nativeQuery = true)
+    Iterable<String[]> findFilmsDescribed(@Param("searchTerm") String searchTerm);
 }

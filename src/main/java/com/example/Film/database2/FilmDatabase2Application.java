@@ -30,6 +30,19 @@ public class FilmDatabase2Application {
 		SpringApplication.run(FilmDatabase2Application.class, args);
 	}
 
+	//Search for films released in year x
+
+	//Search for films released before year x
+
+	//Search for films released after year x
+
+	//Search for films by description
+	@GetMapping("/searchInDescription/{searchTerm}")
+	public Iterable<String[]> searchInDescription(@PathVariable("searchTerm") String searchTerm){
+		searchTerm = "%" + searchTerm + "%";
+		return filmRepo.findFilmsDescribed(searchTerm);
+	}
+
 	//Add category to film
 	@PostMapping("/add/{category}/categoryTo/{title}")
 	public void addCategoryToFilm(@PathVariable("category") String category, @PathVariable("title") String title){
