@@ -5,19 +5,19 @@ import java.util.Set;
 
 @Entity
 @Table(name="actor")
-public class actor {
+public class Actor {
     @Id
     @Column(name="actor_id", unique=true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int actorID;
 
     @ManyToMany(mappedBy = "features")
-    Set<film> starsIn;
+    Set<Film> starsIn;
 
-    public actor(){
+    public Actor(){
     }
 
-    public actor(int actorID, String firstName, String lastName) {
+    public Actor(int actorID, String firstName, String lastName) {
         this.actorID = actorID;
         this.firstName = firstName;
         this.lastName = lastName;

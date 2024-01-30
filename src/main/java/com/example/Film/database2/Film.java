@@ -6,7 +6,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "film")
-public class film {
+public class Film {
     @Id
     @Column(name = "film_ID", unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,11 +17,14 @@ public class film {
         name = "film_actor",
         joinColumns = @JoinColumn(name = "film_id"),
         inverseJoinColumns = @JoinColumn(name = "actor_id"))
-    Set<actor> features;
+    Set<Actor> features;
 
-    public film(){};
+    @ManyToMany(mappedBy = "hasFilms")
+    Set<Category> inCategories;
 
-    public film(int filmID, String title, String description, int releaseYear){
+    public Film(){}
+
+    public Film(int filmID, String title, String description, int releaseYear){
         this.filmID=filmID;
         this.title=title;
         this.description=description;

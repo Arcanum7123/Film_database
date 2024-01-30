@@ -15,62 +15,99 @@ public class FilmDatabase2Application {
 	@Autowired
 	private ActorRepository actorRepo;
 	private FilmRepository filmRepo;
+	private CategoryRepository categoryRepository;
+	private FilmCategoryRepository filmCategoryRepository;
 
-	public FilmDatabase2Application(ActorRepository actorRepo, FilmRepository filmRepo){
+	public FilmDatabase2Application(ActorRepository actorRepo, FilmRepository filmRepo, CategoryRepository categoryRepository, FilmCategoryRepository
+			filmCategoryRepository){
 		this.actorRepo = actorRepo;
 		this.filmRepo = filmRepo;
+		this.categoryRepository = categoryRepository;
+		this.filmCategoryRepository = filmCategoryRepository;
 	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(FilmDatabase2Application.class, args);
 	}
 
+	//Add category to film
+	@PostMapping("/add/{category}/categoryTo/{title}")
+	public void addCategoryToFilm(@PathVariable("category") String category, @PathVariable("title") String title){
+		int categoryID = categoryRepository.findCategoryID(category);
+		int filmID = filmRepo.findFilmID(title);
+		Film_category newCategory = new Film_category();
+		newCategory.setCategoryID(categoryID);
+		newCategory.setFilmID(filmID);
+		filmCategoryRepository.save(newCategory);
+	}
+
+	//Remove category from film
+	@DeleteMapping("/removeFrom/category/{category}/film/{title}")
+	public void removeCategoryFromFilm(@PathVariable("category") String category, @PathVariable("title") String title){
+		int categoryID = categoryRepository.findCategoryID(category);
+		int filmID = filmRepo.findFilmID(title);
+		Film_category toBeRemoved = new Film_category(filmID, categoryID);
+		filmCategoryRepository.delete(toBeRemoved);
+	}
+
+	//Show all categories for a given film
+	@GetMapping("/filmCategoriesFor/{title}")
+	public Iterable<String> getFilmCategories(@PathVariable("title") String title){
+		return categoryRepository.findFilmCategories(title);
+	}
+
+	//Show all films of a given category
+
+	//Show list of all actors
 	@GetMapping("/allActors")
-	public Iterable<actor> getAllActors(){
+	public Iterable<Actor> getAllActors(){
 		return actorRepo.findAll();
 	}
 
-	@GetMapping("actor/{id}")
-	public actor getActorByID(@PathVariable("id") int actorID){
+	//Find actor info for a given ID
+	@GetMapping("/actor/{id}")
+	public Actor getActorByID(@PathVariable("id") int actorID){
 		return actorRepo.findById(actorID).orElseThrow(() -> new ResourceAccessException("Actor not found"));
 	}
 
-	@GetMapping("filmsWith/{firstName}/{lastName}")
+	//Show list of films starring given actor
+	@GetMapping("/filmsWith/{firstName}/{lastName}")
 	public Iterable<String> getFilmByActor(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName){
         return filmRepo.findFilmsWithActor(firstName, lastName);
 	}
 
-	@GetMapping("{id}/starsIn")
-	public Iterable<film> getFilmByActorID(@PathVariable("id") int actorID){
-		actor myActor = new actor();
+	//List of films starring actor by ID
+	@GetMapping("/{id}/starsIn")
+	public Iterable<Film> getFilmByActorID(@PathVariable("id") int actorID){
+		Actor myActor = new Actor();
 		myActor = actorRepo.findById(actorID).orElseThrow(() -> new ResourceAccessException("Actor not found"));
 		return myActor.starsIn;
 	}
 
-	@PostMapping("add/actor/{firstName}/{lastName}")
+	//Add a new actor to the DB
+	@PostMapping("/add/actor/{firstName}/{lastName}")
 	public void addActor(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName){
-		actor newActor = new actor();
+		Actor newActor = new Actor();
 		newActor.setLastName(lastName);
 		newActor.setFirstName(firstName);
 		actorRepo.save(newActor);
 	}
 
-	@PutMapping("update/actor/{id}/{newFirst}/{newLast}")
+	//Change actor's first and/or last names, selected by their ID
+	@PutMapping("/update/actor/{id}/{newFirst}/{newLast}")
 	public void updateActor(@PathVariable("id") int actorID, @PathVariable("newFirst") String newFirst, @PathVariable("newLast") String newLast){
-		actor updatedActor = new actor(actorID, newFirst, newLast);
+		Actor updatedActor = new Actor(actorID, newFirst, newLast);
 		actorRepo.save(updatedActor);
 	}
 
-	@DeleteMapping("delete/actor/{id}/{firstName}/{lastName}")
+	//Remove an actor from the DB
+	@DeleteMapping("/delete/actor/{id}/{firstName}/{lastName}")
 	public void deleteActor(@PathVariable("id") int actorID, @PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName){
-		actor inputDetails = new actor(actorID, firstName, lastName);
-		actor checkDetails = actorRepo.findById(actorID).orElseThrow(() -> new ResourceAccessException("Actor not found"));
+		Actor inputDetails = new Actor(actorID, firstName, lastName);
+		Actor checkDetails = actorRepo.findById(actorID).orElseThrow(() -> new ResourceAccessException("Actor not found"));
 		if ((inputDetails.getActorID() == checkDetails.getActorID() && (inputDetails.getFirstName().equals(checkDetails.getFirstName())) &&
 				(inputDetails.getLastName().equals(checkDetails.getLastName())))){
-			System.out.println("Matched");
 			actorRepo.delete(checkDetails);
-		} else {
-			System.out.println("Not matched");
 		}
 	}
 }
