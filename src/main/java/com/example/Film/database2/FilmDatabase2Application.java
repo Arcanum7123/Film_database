@@ -57,6 +57,10 @@ public class FilmDatabase2Application {
 	}
 
 	//Show all films of a given category
+	@GetMapping("/filmsInCategory/{category}")
+	public Iterable<String> getFilmsInCategory(@PathVariable("category") String category){
+		return filmRepo.findFilmsInCategory(category);
+	}
 
 	//Show list of all actors
 	@GetMapping("/allActors")
