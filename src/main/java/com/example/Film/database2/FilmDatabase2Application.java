@@ -31,10 +31,22 @@ public class FilmDatabase2Application {
 	}
 
 	//Search for films released in year x
+	@GetMapping ("/filmsReleasedIn/{year}")
+	public Iterable<String[]> getFilmsReleasedIn(@PathVariable("year") int year){
+		return filmRepo.findFilmsReleasedIn(year);
+	}
 
 	//Search for films released before year x
+	@GetMapping ("/filmsReleasedBefore/{year}")
+	public Iterable<String[]> getFilmsReleasedBefore(@PathVariable("year") int year){
+		return filmRepo.findFilmsReleasedBefore(year);
+	}
 
 	//Search for films released after year x
+	@GetMapping ("/filmsReleasedAfter/{year}")
+	public Iterable<String[]> getFilmsReleasedAfter(@PathVariable("year") int year){
+		return filmRepo.findFilmsReleasedAfter(year);
+	}
 
 	//Search for films by description
 	@GetMapping("/searchInDescription/{searchTerm}")

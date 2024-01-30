@@ -19,4 +19,13 @@ public interface FilmRepository extends JpaRepository<Film, Integer> {
 
     @Query(value = "SELECT title, description FROM film WHERE description LIKE :searchTerm ;", nativeQuery = true)
     Iterable<String[]> findFilmsDescribed(@Param("searchTerm") String searchTerm);
+
+    @Query(value = "SELECT title, description FROM film WHERE release_year = :year ;", nativeQuery = true)
+    Iterable<String[]> findFilmsReleasedIn(@Param("year") int year);
+
+    @Query(value = "SELECT title, description FROM film WHERE release_year < :year ;", nativeQuery = true)
+    Iterable<String[]> findFilmsReleasedBefore(@Param("year") int year);
+
+    @Query(value = "SELECT title, description FROM film WHERE release_year > :year ;", nativeQuery = true)
+    Iterable<String[]> findFilmsReleasedAfter(@Param("year") int year);
 }
