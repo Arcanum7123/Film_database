@@ -17,17 +17,43 @@ public class FilmDatabase2Application {
 	private FilmRepository filmRepo;
 	private CategoryRepository categoryRepository;
 	private FilmCategoryRepository filmCategoryRepository;
+	private LanguageRepository languageRepo;
 
 	public FilmDatabase2Application(ActorRepository actorRepo, FilmRepository filmRepo, CategoryRepository categoryRepository, FilmCategoryRepository
-			filmCategoryRepository){
+			filmCategoryRepository, LanguageRepository languageRepo){
 		this.actorRepo = actorRepo;
 		this.filmRepo = filmRepo;
 		this.categoryRepository = categoryRepository;
 		this.filmCategoryRepository = filmCategoryRepository;
+		this.languageRepo = languageRepo;
 	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(FilmDatabase2Application.class, args);
+	}
+
+	//Show film's language
+	@GetMapping("/languagesOf/{title}")
+	public Iterable<String> getLanguagesOfFilm(@PathVariable("title") String title){
+		return filmRepo.findLanguagesOfFilm(title);
+	}
+
+	//Add a language to a film
+	@PutMapping("/add/{language}/secondLanguageTo/{title}")
+	public void addLanguageToFilm(@PathVariable("language") String language, @PathVariable("title") String title){
+		Film toAddLanguageTo = new Film();
+		int filmID = filmRepo.findFilmID(title);
+		toAddLanguageTo = filmRepo.findById(filmID).orElseThrow(() -> new ResourceAccessException("Film not found"));
+		int languageToAddID = languageRepo.getLanguageID(language);
+		toAddLanguageTo.setLanguageID(languageToAddID);
+		filmRepo.save(toAddLanguageTo);
+	}
+
+	//Show all films in a given language
+	@GetMapping("/filmsInLanguage/{language}")
+	public Iterable<String> getFilmsInLanguage(@PathVariable("language") String language){
+		int languageID = languageRepo.getLanguageID(language);
+		return filmRepo.findFilmsInLanguage(languageID);
 	}
 
 	//Search for films released in year x
@@ -117,8 +143,8 @@ public class FilmDatabase2Application {
 	@PostMapping("/add/actor/{firstName}/{lastName}")
 	public void addActor(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName){
 		Actor newActor = new Actor();
-		newActor.setLastName(lastName);
-		newActor.setFirstName(firstName);
+		newActor.setLastName(lastName.toUpperCase());
+		newActor.setFirstName(firstName.toUpperCase());
 		actorRepo.save(newActor);
 	}
 

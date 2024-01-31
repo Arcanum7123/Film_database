@@ -24,11 +24,14 @@ public class Film {
 
     public Film(){}
 
-    public Film(int filmID, String title, String description, int releaseYear){
+    public Film(int filmID, String title, String description, int releaseYear, int languageID, int originalLanguageID, String rating){
         this.filmID=filmID;
         this.title=title;
         this.description=description;
         this.releaseYear=releaseYear;
+        this.languageID=languageID;
+        this.originalLanguageID=originalLanguageID;
+        this.rating=rating;
     }
 
     @Column(name="title")
@@ -39,6 +42,39 @@ public class Film {
 
     @Column(name="release_year")
     private int releaseYear;
+
+    @Column(name="language_id")
+    private int languageID;
+
+    @Column(name="original_language_id")
+    private int originalLanguageID;
+
+    @Column(name = "rating")
+    private String rating;
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public int getLanguageID() {
+        return languageID;
+    }
+
+    public void setLanguageID(int languageID) {
+        this.languageID = languageID;
+    }
+
+    public int getOriginalLanguageID() {
+        return originalLanguageID;
+    }
+
+    public void setOriginalLanguageID(int originalLanguageID) {
+        this.originalLanguageID = originalLanguageID;
+    }
 
     public int getFilmID() {
         return filmID;
