@@ -32,10 +32,37 @@ public class FilmDatabase2Application {
 		SpringApplication.run(FilmDatabase2Application.class, args);
 	}
 
+	//Add whole new film
+
+	//Update a film rating
+	@PutMapping("/updateRating/{title}/{rating}")
+	public void updateFilmRating(@PathVariable("title") String title, @PathVariable("rating") String rating){
+		int filmID = filmRepo.findFilmID(title);
+		Film toUpdate = filmRepo.findById(filmID).orElseThrow(() -> new ResourceAccessException("Film not found"));
+		switch (rating){
+			case "G", "PG", "PG-13", "R", "NC-17":
+				toUpdate.setRating(rating);
+				filmRepo.save(toUpdate);
+				break;
+		}
+	}
+
+	//Show films of a rating
+	@GetMapping("/rated/{rating}")
+	public Iterable<String> getFilmsRated(@PathVariable("rating") String rating){
+		return filmRepo.findFilmsRated(rating);
+	}
+
+	//Show rating of a film
+	@GetMapping("/filmRating/{title}")
+	public String getFilmRating(@PathVariable("title") String title){
+		return filmRepo.findFilmsRating(title);
+	}
+
 	//Show film's language
 	@GetMapping("/languagesOf/{title}")
 	public Iterable<String> getLanguagesOfFilm(@PathVariable("title") String title){
-		return filmRepo.findLanguagesOfFilm(title);
+		return languageRepo.findLanguagesOfFilm(title);
 	}
 
 	//Add a language to a film
