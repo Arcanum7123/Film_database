@@ -1,5 +1,6 @@
 package com.example.Film.database2;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -24,7 +25,7 @@ public class Film {
 
     public Film(){}
 
-    public Film(int filmID, String title, String description, int releaseYear, int languageID, int originalLanguageID, String rating){
+    public Film(int filmID, String title, String description, int releaseYear, int languageID, Integer originalLanguageID, String rating){
         this.filmID=filmID;
         this.title=title;
         this.description=description;
@@ -46,8 +47,8 @@ public class Film {
     @Column(name="language_id")
     private int languageID;
 
-    @Column(name="original_language_id")
-    private int originalLanguageID;
+    @Column(name="original_language_id", nullable = true)
+    private Integer originalLanguageID;
 
     @Column(name = "rating")
     private String rating;
@@ -72,7 +73,7 @@ public class Film {
         return originalLanguageID;
     }
 
-    public void setOriginalLanguageID(int originalLanguageID) {
+    public void setOriginalLanguageID(Integer originalLanguageID) {
         this.originalLanguageID = originalLanguageID;
     }
 

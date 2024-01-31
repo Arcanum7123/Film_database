@@ -33,18 +33,31 @@ public class FilmDatabase2Application {
 	}
 
 	//Add whole new film
+	@PostMapping("/addNewFilm")
+	public String addNewFilm(@RequestBody Film filmDetails){
+		String rating = filmDetails.getRating();
+      	return switch (rating) {
+            case "G", "PG", "PG-13", "R", "NC-17" -> {
+                filmRepo.save(filmDetails);
+                yield "Film added successfully";
+            }
+            default -> "Please enter a valid rating and try again.";
+        };
+	}
 
 	//Update a film rating
 	@PutMapping("/updateRating/{title}/{rating}")
-	public void updateFilmRating(@PathVariable("title") String title, @PathVariable("rating") String rating){
+	public String updateFilmRating(@PathVariable("title") String title, @PathVariable("rating") String rating){
 		int filmID = filmRepo.findFilmID(title);
 		Film toUpdate = filmRepo.findById(filmID).orElseThrow(() -> new ResourceAccessException("Film not found"));
-		switch (rating){
-			case "G", "PG", "PG-13", "R", "NC-17":
-				toUpdate.setRating(rating);
-				filmRepo.save(toUpdate);
-				break;
-		}
+		return switch (rating) {
+			case "G", "PG", "PG-13", "R", "NC-17" -> {
+			toUpdate.setRating(rating);
+			filmRepo.save(toUpdate);
+			yield "Rating successfully updated";
+			}
+			default -> "That is not a valid rating.";
+		};
 	}
 
 	//Show films of a rating
@@ -161,8 +174,7 @@ public class FilmDatabase2Application {
 	//List of films starring actor by ID
 	@GetMapping("/{id}/starsIn")
 	public Iterable<Film> getFilmByActorID(@PathVariable("id") int actorID){
-		Actor myActor = new Actor();
-		myActor = actorRepo.findById(actorID).orElseThrow(() -> new ResourceAccessException("Actor not found"));
+        Actor myActor = actorRepo.findById(actorID).orElseThrow(() -> new ResourceAccessException("Actor not found"));
 		return myActor.starsIn;
 	}
 
@@ -184,12 +196,15 @@ public class FilmDatabase2Application {
 
 	//Remove an actor from the DB
 	@DeleteMapping("/delete/actor/{id}/{firstName}/{lastName}")
-	public void deleteActor(@PathVariable("id") int actorID, @PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName){
+	public String deleteActor(@PathVariable("id") int actorID, @PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName){
 		Actor inputDetails = new Actor(actorID, firstName, lastName);
 		Actor checkDetails = actorRepo.findById(actorID).orElseThrow(() -> new ResourceAccessException("Actor not found"));
 		if ((inputDetails.getActorID() == checkDetails.getActorID() && (inputDetails.getFirstName().equals(checkDetails.getFirstName())) &&
 				(inputDetails.getLastName().equals(checkDetails.getLastName())))){
 			actorRepo.delete(checkDetails);
+			return "Actor successfully deleted.";
+		} else {
+			return "The provided details do not match.";
 		}
 	}
 }
