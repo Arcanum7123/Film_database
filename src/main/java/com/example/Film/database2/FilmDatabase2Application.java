@@ -96,13 +96,14 @@ public class FilmDatabase2Application {
 
 	//Add a language to a film
 	@PutMapping("/add/{language}/secondLanguageTo/{title}")
-	public void addLanguageToFilm(@PathVariable("language") String language, @PathVariable("title") String title){
+	public String addLanguageToFilm(@PathVariable("language") String language, @PathVariable("title") String title){
 		Film toAddLanguageTo = new Film();
 		int filmID = filmRepo.findFilmID(title);
 		toAddLanguageTo = filmRepo.findById(filmID).orElseThrow(() -> new ResourceAccessException("Film not found"));
 		int languageToAddID = languageRepo.getLanguageID(language);
 		toAddLanguageTo.setOriginalLanguageID(languageToAddID);
 		filmRepo.save(toAddLanguageTo);
+		return title + " now also in " + language;
 	}
 
 	//Show all films in a given language
@@ -139,22 +140,24 @@ public class FilmDatabase2Application {
 
 	//Add category to film
 	@PostMapping("/add/{category}/categoryTo/{title}")
-	public void addCategoryToFilm(@PathVariable("category") String category, @PathVariable("title") String title){
+	public String addCategoryToFilm(@PathVariable("category") String category, @PathVariable("title") String title){
 		int categoryID = categoryRepo.findCategoryID(category);
 		int filmID = filmRepo.findFilmID(title);
 		Film_category newCategory = new Film_category();
 		newCategory.setCategoryID(categoryID);
 		newCategory.setFilmID(filmID);
 		filmCategoryRepo.save(newCategory);
+		return title + " now associated with " + category;
 	}
 
 	//Remove category from film
 	@DeleteMapping("/removeFrom/category/{category}/film/{title}")
-	public void removeCategoryFromFilm(@PathVariable("category") String category, @PathVariable("title") String title){
+	public String removeCategoryFromFilm(@PathVariable("category") String category, @PathVariable("title") String title){
 		int categoryID = categoryRepo.findCategoryID(category);
 		int filmID = filmRepo.findFilmID(title);
 		Film_category toBeRemoved = new Film_category(filmID, categoryID);
 		filmCategoryRepo.delete(toBeRemoved);
+		return title + " not longer associated with " + category;
 	}
 
 	//Show all categories for a given film
@@ -196,18 +199,20 @@ public class FilmDatabase2Application {
 
 	//Add a new actor to the DB
 	@PostMapping("/add/actor/{firstName}/{lastName}")
-	public void addActor(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName){
+	public String addActor(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName){
 		Actor newActor = new Actor();
 		newActor.setLastName(lastName.toUpperCase());
 		newActor.setFirstName(firstName.toUpperCase());
 		actorRepo.save(newActor);
+		return "New actor successfully added.";
 	}
 
 	//Change actor's first and/or last names, selected by their ID
 	@PutMapping("/update/actor/{id}/{newFirst}/{newLast}")
-	public void updateActor(@PathVariable("id") int actorID, @PathVariable("newFirst") String newFirst, @PathVariable("newLast") String newLast){
-		Actor updatedActor = new Actor(actorID, newFirst, newLast);
+	public String updateActor(@PathVariable("id") int actorID, @PathVariable("newFirst") String newFirst, @PathVariable("newLast") String newLast){
+		Actor updatedActor = new Actor(actorID, newFirst.toUpperCase(), newLast.toUpperCase());
 		actorRepo.save(updatedActor);
+		return "Actor name successfully updated.";
 	}
 
 	//Remove an actor from the DB
