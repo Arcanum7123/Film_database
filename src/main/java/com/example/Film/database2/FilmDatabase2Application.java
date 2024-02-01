@@ -15,17 +15,19 @@ public class FilmDatabase2Application {
 	@Autowired
 	private ActorRepository actorRepo;
 	private FilmRepository filmRepo;
-	private CategoryRepository categoryRepository;
-	private FilmCategoryRepository filmCategoryRepository;
+	private CategoryRepository categoryRepo;
+	private FilmCategoryRepository filmCategoryRepo;
 	private LanguageRepository languageRepo;
+	private FilmActorRepository filmActorRepo;
 
-	public FilmDatabase2Application(ActorRepository actorRepo, FilmRepository filmRepo, CategoryRepository categoryRepository, FilmCategoryRepository
-			filmCategoryRepository, LanguageRepository languageRepo){
+	public FilmDatabase2Application(ActorRepository actorRepo, FilmRepository filmRepo, CategoryRepository categoryRepo, FilmCategoryRepository
+			filmCategoryRepo, LanguageRepository languageRepo, FilmActorRepository filmActorRepo){
 		this.actorRepo = actorRepo;
 		this.filmRepo = filmRepo;
-		this.categoryRepository = categoryRepository;
-		this.filmCategoryRepository = filmCategoryRepository;
+		this.categoryRepo = categoryRepo;
+		this.filmCategoryRepo = filmCategoryRepo;
 		this.languageRepo = languageRepo;
+		this.filmActorRepo = filmActorRepo;
 	}
 
 	public static void main(String[] args) {
@@ -43,6 +45,20 @@ public class FilmDatabase2Application {
             }
             default -> "Please enter a valid rating and try again.";
         };
+	}
+
+	//Add actor to a film
+	@PostMapping("/addActorToFilm/{title}")
+	public String addActorToFilm(@RequestBody Actor names, @PathVariable("title") String title){
+		Integer actorID = actorRepo.findIDByName(names.getFirstName(), names.getLastName());
+		Integer filmID = filmRepo.findFilmID(title);
+		if ((actorID != null) && (filmID != null)) {
+			Film_actor newEntry = new Film_actor(filmID, actorID);
+			filmActorRepo.save(newEntry);
+			return "Actor added to film.";
+		} else {
+			return "Actor and/or film does not exist.";
+		}
 	}
 
 	//Update a film rating
@@ -85,7 +101,7 @@ public class FilmDatabase2Application {
 		int filmID = filmRepo.findFilmID(title);
 		toAddLanguageTo = filmRepo.findById(filmID).orElseThrow(() -> new ResourceAccessException("Film not found"));
 		int languageToAddID = languageRepo.getLanguageID(language);
-		toAddLanguageTo.setLanguageID(languageToAddID);
+		toAddLanguageTo.setOriginalLanguageID(languageToAddID);
 		filmRepo.save(toAddLanguageTo);
 	}
 
@@ -124,27 +140,27 @@ public class FilmDatabase2Application {
 	//Add category to film
 	@PostMapping("/add/{category}/categoryTo/{title}")
 	public void addCategoryToFilm(@PathVariable("category") String category, @PathVariable("title") String title){
-		int categoryID = categoryRepository.findCategoryID(category);
+		int categoryID = categoryRepo.findCategoryID(category);
 		int filmID = filmRepo.findFilmID(title);
 		Film_category newCategory = new Film_category();
 		newCategory.setCategoryID(categoryID);
 		newCategory.setFilmID(filmID);
-		filmCategoryRepository.save(newCategory);
+		filmCategoryRepo.save(newCategory);
 	}
 
 	//Remove category from film
 	@DeleteMapping("/removeFrom/category/{category}/film/{title}")
 	public void removeCategoryFromFilm(@PathVariable("category") String category, @PathVariable("title") String title){
-		int categoryID = categoryRepository.findCategoryID(category);
+		int categoryID = categoryRepo.findCategoryID(category);
 		int filmID = filmRepo.findFilmID(title);
 		Film_category toBeRemoved = new Film_category(filmID, categoryID);
-		filmCategoryRepository.delete(toBeRemoved);
+		filmCategoryRepo.delete(toBeRemoved);
 	}
 
 	//Show all categories for a given film
 	@GetMapping("/filmCategoriesFor/{title}")
 	public Iterable<String> getFilmCategories(@PathVariable("title") String title){
-		return categoryRepository.findFilmCategories(title);
+		return categoryRepo.findFilmCategories(title);
 	}
 
 	//Show all films of a given category

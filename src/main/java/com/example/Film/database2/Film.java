@@ -1,6 +1,5 @@
 package com.example.Film.database2;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
 import java.util.Set;
