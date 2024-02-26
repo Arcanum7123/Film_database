@@ -1,4 +1,4 @@
-package com.example.Film.database2;
+package com.example.films.database2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;

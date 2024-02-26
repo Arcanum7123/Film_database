@@ -1,4 +1,4 @@
-package com.example.Film.database2;
+package com.example.films.database2;
 
 import jakarta.persistence.*;
 
@@ -68,7 +68,7 @@ public class Film {
         this.languageID = languageID;
     }
 
-    public int getOriginalLanguageID() {
+    public Integer getOriginalLanguageID() {
         return originalLanguageID;
     }
 
