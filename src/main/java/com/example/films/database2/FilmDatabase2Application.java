@@ -1,5 +1,6 @@
 package com.example.films.database2;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -139,6 +140,7 @@ public class FilmDatabase2Application {
 	}
 
 	//Add category to film
+	@Transactional
 	@PostMapping("/add/{category}/categoryTo/{title}")
 	public String addCategoryToFilm(@PathVariable("category") String category, @PathVariable("title") String title){
 		int categoryID = categoryRepo.findCategoryID(category);
@@ -151,6 +153,7 @@ public class FilmDatabase2Application {
 	}
 
 	//Remove category from film
+	@Transactional
 	@DeleteMapping("/removeFrom/category/{category}/film/{title}")
 	public String removeCategoryFromFilm(@PathVariable("category") String category, @PathVariable("title") String title){
 		int categoryID = categoryRepo.findCategoryID(category);
