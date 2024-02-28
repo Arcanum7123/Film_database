@@ -2,7 +2,7 @@ package com.example.films.database2;
 
 import io.cucumber.java.en.When;
 
-public class FilmsRatedTest extends SpringIntegrationTest{
+public class FilmsRatedStepDefinitions extends SpringIntegrationTest{
     private final String rating = "R";
     private Iterable<String> films;
 
